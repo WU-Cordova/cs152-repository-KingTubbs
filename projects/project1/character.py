@@ -6,4 +6,4 @@ class Character:
     character_type: CharacterType
     hand: list
     score: int
-    altscore: None
+    altscore: int

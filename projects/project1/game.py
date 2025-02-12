@@ -15,6 +15,7 @@ class Game:
         self._dealer = dealer
         self.dealerstay = False
         self.playerstay = False
+        self.roundstart()
         
     def deal(self, target:Character):
         randomcard = random.choice(multideck)
@@ -69,7 +70,7 @@ class Game:
         self.end = False
         self.playerstay = False
         self.dealerstay = False
-        numberofdecks = random.choice(2, 4, 6, 8)
+        numberofdecks = random.randrange(2,8,2)
         for i in range(numberofdecks):
             for card in clubs:
                 multideck.add(card)
