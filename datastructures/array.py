@@ -19,7 +19,8 @@ from datastructures.iarray import IArray, T
 class Array(IArray[T]):  
 
     def __init__(self, starting_sequence: Sequence[T]=[], data_type: type=object) -> None: 
-        raise NotImplementedError('Constructor not implemented.')
+        self.starting_sequence = starting_sequence
+        self.data_type = data_type
 
     @overload
     def __getitem__(self, index: int) -> T: ...
