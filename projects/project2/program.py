@@ -1,8 +1,10 @@
 
 
 def main():
-    
-    print("Hello, World!")
+    #grid = Grid()
+    #game = GameController()
+    #game.run()
+    print("hi")
 
 
 
