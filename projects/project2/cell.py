@@ -1,6 +1,15 @@
-class cell:
+#cell.py
+class Cell:
     def __init__(self) -> None:
-        self.position = 0
-        self.neighbor_count = 0
-        self.alive_status = False
+        self.position_row = int
+        self.position_col = int
+        self.neighbor_count = int
+        self.alive_status = bool
+
+    def __str__(self) -> str:
+        if self.alive_status == True:
+            return "O"
+        elif self.alive_status == False:
+            return "X"
+    
         
