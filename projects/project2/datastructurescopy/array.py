@@ -13,7 +13,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 
-from datastructures.iarray import IArray, T
+from datastructurescopy.iarray import IArray, T
 
 
 class Array(IArray[T]):  
@@ -25,6 +25,9 @@ class Array(IArray[T]):
             raise ValueError
         if not isinstance(data_type, type):
             raise ValueError
+        for item in starting_sequence:
+            if not isinstance(item, self.data_type):
+                raise TypeError
         self.__items = list(starting_sequence) 
         self.__item_count = len(self.__items) 
         self.__data_type = data_type
@@ -35,9 +38,11 @@ class Array(IArray[T]):
     @overload
     def __getitem__(self, index: slice) -> Sequence[T]: ...
     def __getitem__(self, index: int | slice) -> T | Sequence[T]:
-        if self.__item_count < index:
+        if isinstance(index, slice):
+            return Array(self.__items[index])  
+        if self.__item_count <= index:
             raise IndexError
-        if not isinstance(index, int | slice):
+        if not isinstance(index, int):
             raise TypeError
         return self.__items[index]
     
@@ -96,11 +101,12 @@ class Array(IArray[T]):
             self.__items = new_items
 
     def __len__(self) -> int: 
-        for i in self.__items:
-            return len(i)
+        return self.__item_count
 
     def __eq__(self, other: object) -> bool:
         #works
+        if not isinstance(other, Array):
+            return False
         if self.__items == other.__items and self.data_type == other.data_type:
             return True
         else:
@@ -117,11 +123,8 @@ class Array(IArray[T]):
 
     def __delitem__(self, index: int) -> None:
         #works
-        original = self.__items
-        copy = []
-        copy = original[0:index]
-        copy.append(original[index+1:])
-        self.__items = copy
+        del self.__items[index]
+        self.__item_count -= 1
         
 
     def __contains__(self, item: Any) -> bool: 
@@ -132,7 +135,8 @@ class Array(IArray[T]):
         return False
 
     def clear(self) -> None:
-        self.__items = []
+        self.__items = [None] * self.__item_count  
+        self.__item_count = 0  
 
     def __str__(self) -> str:
         return '[' + ', '.join(str(item) for item in self) + ']'
@@ -143,4 +147,3 @@ class Array(IArray[T]):
 
 if __name__ == '__main__':
     print("hi")
-    
