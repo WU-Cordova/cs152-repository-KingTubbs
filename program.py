@@ -1,146 +1,84 @@
-# datastructures.array.Array
-
-""" This module defines an Array class that represents a one-dimensional array. 
-    See the stipulations in iarray.py for more information on the methods and their expected behavior.
-    Methods that are not implemented raise a NotImplementedError until they are implemented.
-"""
-
-from __future__ import annotations
-from collections.abc import Sequence
 import os
-from typing import Any, Iterator, overload
-import numpy as np
-from numpy.typing import NDArray
 
+from datastructures.array import Array, T
+from datastructures.istack import IStack
 
-from datastructures.iarray import IArray, T
-
-
-class Array(IArray[T]):  
-
-    def __init__(self, starting_sequence: Sequence[T]=[], data_type: type=object) -> None: 
-        self.starting_sequence = starting_sequence
-        self.data_type = data_type
-        if not isinstance(starting_sequence, Sequence):
-            raise ValueError
-        if not isinstance(data_type, type):
-            raise ValueError
-        self.__items = list(starting_sequence) 
-        self.__item_count = len(self.__items) 
-        self.__data_type = data_type
-
-
-    @overload
-    def __getitem__(self, index: int) -> T: ...
-    @overload
-    def __getitem__(self, index: slice) -> Sequence[T]: ...
-    def __getitem__(self, index: int | slice) -> T | Sequence[T]:
-        if self.__item_count < index:
-            raise IndexError
-        if not isinstance(index, int | slice):
-            raise TypeError
-        return self.__items[index]
+class ArrayStack(IStack[T]):
+    ''' ArrayStack class that implements the IStack interface. The ArrayStack is a 
+        fixed-size stack that uses an Array to store the items.'''
     
-    def __setitem__(self, index: int, item: T) -> None:
-        if self.__item_count < index:
-            raise IndexError
-        if not isinstance(item, self.data_type):
-            raise TypeError
-        self.__items[index] = item
-
-    def append(self, data: T) -> None:
-        if self.__item_count == len(self.__items):
-            new_physical_size = max(1, 2 * len(self.__items))
-            new_items = [None] * new_physical_size
-            for i in range(len(self.__items)):
-                new_items[i] = self.__items[i]
-            self.__items = new_items
-        self.__items[self.__item_count] = data
-        self.__item_count += 1        
-
-    def append_front(self, data: T) -> None:
-        if self.__item_count == len(self.__items):
-            new_physical_size = max(1, 2 * len(self.__items))
-            new_items = [None] * new_physical_size
-            for i in range(self.__item_count):
-                new_items[i+1] = self.__items[i]
-            self.__items = new_items
-        else: 
-            for i in range(self.__item_count, 0, -1):
-                self.__items[i] = self.__items[i-1]
-        self.__items[0] = data
-        self.__item_count += 1  
-
-    def pop(self) -> None:
-        self.__items[-1] = None
-        self.__item_count -= 1
-        if self.__item_count <= len(self.__items)/4:
-            new_physical_size = max(1, len(self.__items) // 2)
-            new_items = [None] * new_physical_size
-            for i in range(self.__item_count):
-                new_items[i] = self.__items[i]
-            self.__items = new_items
-    
-    def pop_front(self) -> None:
-        if self.__item_count == 0:
-            raise IndexError
-        for i in range(1, self.__item_count):
-            self.__items[i-1] = self.__items[i]
-        self.__item_count -= 1
-        self.__items[self.__item_count] = None
-        if self.__item_count <= len(self.__items) // 4:
-            new_physical_size = max(1, len(self.__items) // 2)
-            new_items = [None] * new_physical_size
-            for i in range(self.__item_count):
-                new_items[i] = self.__items[i]
-            self.__items = new_items
-
-    def __len__(self) -> int: 
-        for i in self.__items:
-            return len(i)
-
-    def __eq__(self, other: object) -> bool:
-        #works
-        if self.__items == other.__items and self.data_type == other.data_type:
-            return True
-        else:
-            return False
-    
-    def __iter__(self) -> Iterator[T]:
-        for i in range(self.__item_count):
-            yield self.__items[i]
-
-    def __reversed__(self) -> Iterator[T]:
-        reverse = self.starting_sequence[-1:]
-        for i in reverse:
-            yield self.__items[i]
-
-    def __delitem__(self, index: int) -> None:
-        #works
-        original = self.__items
-        copy = []
-        copy = original[0:index]
-        copy.append(original[index+1:])
-        self.__items = copy
+    def __init__(self, max_size: int = 0, data_type=object) -> None:
+        ''' Constructor to initialize the stack 
         
+            Arguments: 
+                max_size: int -- The maximum size of the stack. 
+                data_type: type -- The data type of the stack.       
+        '''
+        self.max_size = max_size
+        self.data_type = data_type
+        starting_sequence = [data_type() for i in range(max_size)]
+        self.stack = Array(starting_sequence, data_type)
+        self._top = 0
 
-    def __contains__(self, item: Any) -> bool: 
-        #works
-        for i in self.__items:
-            if item == i:
-                return True
-        return False
+    def push(self, item: T) -> None:
+        """top = top + 1"""
+        self.stack[self._top] = item
+        self._top += 1
+
+    def pop(self) -> T:
+       """top = top - 1"""
+       yield self.stack[self._top]
+       self.stack[self._top] = self.data_type()
+       self._top -= 1
 
     def clear(self) -> None:
-        self.__items = []
+        self.stack.clear()
+       
+    @property
+    def peek(self) -> T:
+        return self.stack[self._top] 
+
+    @property
+    def maxsize(self) -> int:
+        ''' Returns the maximum size of the stack. 
+        
+            Returns:
+                int: The maximum size of the stack.
+        '''
+        return len(self.stack)
+    
+    @property
+    def full(self) -> bool:
+        ''' Returns True if the stack is full, False otherwise. 
+        
+            Returns:
+                bool: True if the stack is full, False otherwise.
+        '''
+        return self.max_size == self._top + 1
+
+    @property
+    def empty(self) -> bool:
+        return self._top == 0
+
+    def __eq__(self, other: object) -> bool:
+       return self == other
+
+    def __len__(self) -> int:
+       return self._top
+    
+    def __contains__(self, item: T) -> bool:
+        for i in range(len(self.stack)):
+           if self.stack[i] == item:
+               return True
+        else:
+           return False
 
     def __str__(self) -> str:
-        return '[' + ', '.join(str(item) for item in self) + ']'
+        return str([self.stack[i] for i in range(self._top)])
     
     def __repr__(self) -> str:
-        return f'Array {self.__str__()}, Logical: {self.__item_count}, Physical: {len(self.__items)}, type: {self.__data_type}'
+        return f"ArrayStack({self.maxsize}): items: {str(self)}"
     
-
 if __name__ == '__main__':
-    print("hi")
-    
+    my_stack = ArrayStack(5, int)
+    print(my_stack.stack)
