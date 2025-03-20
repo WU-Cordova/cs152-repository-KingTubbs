@@ -69,7 +69,7 @@ class ArrayStack(IStack[T]):
         if not isinstance(other, ArrayStack) or len(self) != len(other):
             return False
     
-        for i in range(self._top):  # Compare only valid elements
+        for i in range(self._top):
             if self.stack[i] != other.stack[i]:
                 return False
         return True
