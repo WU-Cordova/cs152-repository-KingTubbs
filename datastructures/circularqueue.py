@@ -99,7 +99,9 @@ class CircularQueue(IQueue[T]):
         if self.empty:
             raise IndexError
         item = self.circularqueue[self._front]
+        print(item)
         self.circularqueue[self._front] = self.default
+        print(item)
         self._front = (self._front + 1) % len(self.circularqueue)
         self._number_of_items -= 1
         return item
@@ -304,19 +306,9 @@ class CircularQueue(IQueue[T]):
         '''
         if not isinstance(other, CircularQueue) or len(self) != len(other):
             return False
-        
-        self_items = []
-        other_items = []
 
-        for i in range(len(self.circularqueue)):
-            self_items.append(self.circularqueue[(self._front + i) % len(self.circularqueue)])
-            other_items.append(other.circularqueue[(other._front + i) % len(other.circularqueue)])
-
-        #print(self_items)
-        #print(other_items)
-
-        for i in range(len(self_items)):
-            if self_items[i] != other_items[i]:
+        for i in range(self._number_of_items):
+            if self.circularqueue[(self._front + i) % len(self.circularqueue)] != other.circularqueue[(other._front + i) % len(other.circularqueue)]:
                 return False
         else:
             return True
@@ -388,21 +380,3 @@ class CircularQueue(IQueue[T]):
         '''
         return f'ArrayQueue({repr(self.circularqueue)})'
                                   
-
-    
-if __name__ == '__main__':
-    q1 = CircularQueue(maxsize=5, data_type=int)
-    q2 = CircularQueue(maxsize=5, data_type=int)
-    for i in range(5):
-        q1.enqueue(i)
-        
-    for i in range(3):
-        q2.enqueue(i)
-        
-    for i in range(3):
-        q2.dequeue()
-    
-    for i in range(5):
-        q2.enqueue(i)
-
-    assert q1 == q2
