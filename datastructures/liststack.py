@@ -2,9 +2,9 @@ import os
 from datastructures.istack import IStack
 from typing import Generic
 
-from datastructures.linkedlist import LinkedList
+from datastructures.linkedlist import LinkedList, T
 
-class ListStack[T](Generic[T], IStack[T]):
+class ListStack(IStack[T]):
     """
     ListStack (LinkedList-based Stack)
 
@@ -51,7 +51,7 @@ class ListStack[T](Generic[T], IStack[T]):
         Raises:
             IndexError: If the stack is empty.
         """
-        self._list.pop_front()
+        return self._list.pop_front()
 
     def peek(self) -> T:
         """
@@ -63,7 +63,7 @@ class ListStack[T](Generic[T], IStack[T]):
         Raises:
             IndexError: If the stack is empty.
         """
-        self._list.front
+        return self._list.front
 
     @property
     def empty(self) -> bool:
@@ -73,7 +73,7 @@ class ListStack[T](Generic[T], IStack[T]):
         Returns:
             bool: True if the stack is empty, False otherwise.
         """
-        self._list.empty
+        return self._list.empty
 
     def clear(self):
         """
