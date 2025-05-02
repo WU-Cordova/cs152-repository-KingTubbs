@@ -1,8 +1,12 @@
-
+from BistroSystem import BistroSystem
 
 def main():
     
-    print("Hello, World!")
+    print("Welcome to the Bistro!")
+    print(" ")
+    system = BistroSystem()
+    system.MainMenuDisplay()
+    system.MainMenuInput()
 
 
 
