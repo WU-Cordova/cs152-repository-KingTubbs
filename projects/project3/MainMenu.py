@@ -1,5 +1,5 @@
 #array
-from datastructures.array import Array
+from datastructurescopy.array import Array
 
 MainMenuList = ["📋Main Menu",
  "1. Display Menu",

@@ -1,13 +1,13 @@
 from Drink import Drink
-from datastructures.array import Array
+from datastructurescopy.array import Array
 
-Menu = Array(None, Drink)
+Menu = Array([], Drink)
 
-HotChoco = Drink("Hot Choco", "Medium", 4.00, None)
-LondonFog = Drink("London Fod", "Medium", 5.25, None)
-ChaiLatte = Drink("Chai Latte", "Medium", 5.50, None)
-ItalianSoda = Drink("Italian Soda", "Medium", 4.00, None)
-Lemonade = Drink("Lemonade", "Medium", 4.00, None)
+HotChoco = Drink("Hot Choco", "Medium", 4.00, 0)
+LondonFog = Drink("London Fog", "Medium", 5.25, 0)
+ChaiLatte = Drink("Chai Latte", "Medium", 5.50, 0)
+ItalianSoda = Drink("Italian Soda", "Medium", 4.00, 0)
+Lemonade = Drink("Lemonade", "Medium", 4.00, 0)
 
 Menu.append(HotChoco)
 Menu.append(LondonFog)
